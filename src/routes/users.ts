@@ -7,9 +7,7 @@ import { env } from "../env";
 import { checkSessionIdExists } from "../middlewares/check-sessio-id-exists";
 
 export async function usersRoutes(app: FastifyInstance){
-  app.post('/', async (request, reply) => {
-    //const { sessionId } = request.cookies
-
+  app.post('/create', async (request, reply) => {
     const createUsersBodySchema = z.object({ 
       username: z.string(),
       password: z.string(),
@@ -19,20 +17,26 @@ export async function usersRoutes(app: FastifyInstance){
       request.body
     )
 
+    const user = await knex('users').select().where('username', username).first()
+    console.log(user)
+
+    if(user){
+      throw new Error('Não é possível utilizar esse username.')
+    }
+
     const passwordJwt = jwt.sign(password, env.JWT_SECRET)
   
-    const users = await knex('users')
+    const idUser  = await knex('users')
       .insert({
         id: randomUUID(),
         username,
         password: passwordJwt
       })
-      .returning('*')
-
-      console.log(users)
-    return {
-      users,
-    }
+      .returning('id')
+      
+      return {
+        id: idUser[0].id
+      }
   },)
 
   app.post('/auth', async (request, reply) =>{
@@ -54,7 +58,9 @@ export async function usersRoutes(app: FastifyInstance){
     if(!jwtViryfi){
       throw new Error('Username or password do not match')
     }else{
-      const sessionId = randomUUID()
+      const sessionId = jwt.sign({username: username}, env.JWT_SECRET, {
+        expiresIn: 1000 * 60 * 60 * 24 * 7,
+      })
 
       reply.cookie('sessionId', sessionId, {
         path: '/',
