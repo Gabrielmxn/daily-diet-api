@@ -34,17 +34,50 @@ export async function snacksRoutes(app: FastifyInstance){
     reply.status(200).send(createDiet)
   })
 
-  app.get('/list/:id', async (request, reply) => {
-    const createSnacksParamsSchema = z.object({
-      id: z.string()
+  app.get('/:idUser/list', async (request, reply) => {
+    
+    const listSnacksParamsSchema = z.object({
+      idUser: z.string()
     })
 
-    const { id } = createSnacksParamsSchema.parse(request.params)
+    const { idUser } = listSnacksParamsSchema.parse(request.params)
 
-    const listAllSnacksFromId = await knex('snacks').select().where('idUser', id)
+    const listAllSnacksFromId = await knex('snacks').select().where('idUser', idUser)
 
     return {
       listAllSnacksFromId
     }
+  })
+
+  app.put('/:idUser/edit/:idSnack', async (request, reply) => {
+    const editSnackParamsSchema = z.object({
+      idUser: z.string(),
+      idSnack: z.string(),
+    })
+
+    const editSnackBodySchema = z.object({
+      name: z.string(),
+      description: z.string(),
+      dateAndTime: z.string(),
+      diet: z.boolean(),
+    })
+
+    const { idUser, idSnack } = editSnackParamsSchema.parse(request.params);
+
+    const user = await knex('users').where('id', idUser).first()
+
+    if (!user){
+      throw new Error('user not found');
+    }
+
+    const { name, description, dateAndTime, diet } = editSnackBodySchema.parse(request.body)
+    
+
+    const snack = await knex('snacks').where({
+      id: idSnack,
+      idUser
+    }).update({ name: name, description: description, dateAndTime: dateAndTime, diet: diet })
+    
+    return { snack}
   })
 }

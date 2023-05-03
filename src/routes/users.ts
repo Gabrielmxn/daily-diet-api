@@ -18,7 +18,7 @@ export async function usersRoutes(app: FastifyInstance){
     )
 
     const user = await knex('users').select().where('username', username).first()
-    console.log(user)
+   
 
     if(user){
       throw new Error('Não é possível utilizar esse username.')
