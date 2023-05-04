@@ -186,7 +186,6 @@ describe('Snacks routes', async () => {
 
   })
 
-
   it("Should visualize one snacks by id", async () => {
     const { body } = await request(app.server)
       .post('/users/create')
