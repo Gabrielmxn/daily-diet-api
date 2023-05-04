@@ -42,7 +42,7 @@ describe('Snacks routes', async () => {
         dateAndTime: "22023-05-01T14:56:13Z",
         diet: true
       })
-      .expect(200)
+      .expect(204)
 
 
 
@@ -154,6 +154,70 @@ describe('Snacks routes', async () => {
     ])
 
 
+
+  })
+
+  it("Should delete snacks by id", async () => {
+    const { body } = await request(app.server)
+      .post('/users/create')
+      .send({
+        username: "Gabriels",
+        password: "123456789"
+      })
+
+
+    const { id: idUser } = body
+    await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Feijao',
+        idUser: idUser,
+        description: 'Testando feijao',
+        dateAndTime: '22023-05-01T14:56:13Z',
+        diet: false
+      })
+    const { body: snackBody } = await request(app.server)
+      .get(`/snacks/${idUser}/list`)
+
+    const resulteSnack = await request(app.server)
+      .delete(`/snacks/${idUser}/delete/${snackBody.listAllSnacksFromId[0].id}`)
+
+    expect(resulteSnack.status).toEqual(200)
+
+  })
+
+
+  it("Should delete snacks by id", async () => {
+    const { body } = await request(app.server)
+      .post('/users/create')
+      .send({
+        username: "Gabriels",
+        password: "123456789"
+      })
+
+
+    const { id: idUser } = body
+    await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com feijoada',
+        idUser: idUser,
+        description: 'Essa comida é muito típica',
+        dateAndTime: '22023-05-01T14:56:13Z',
+        diet: false
+      })
+    const { body: snackBody } = await request(app.server)
+      .get(`/snacks/${idUser}/list`)
+
+    const resulteSnack = await request(app.server)
+      .get(`/snacks/${idUser}/list/${snackBody.listAllSnacksFromId[0].id}`)
+
+    expect(resulteSnack.body.snack).toEqual(
+      expect.objectContaining({
+        name: 'Arroz com feijoada',
+        description: 'Essa comida é muito típica',
+      })
+    )
 
   })
 

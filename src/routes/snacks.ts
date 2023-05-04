@@ -27,11 +27,11 @@ export async function snacksRoutes(app: FastifyInstance){
       throw new Error('Usuário não existe')
     }
 
-    const createDiet = await knex('snacks').insert({
+    await knex('snacks').insert({
       id: randomUUID(), name, idUser: user.id, description, dateAndTime, diet
     })
 
-    reply.status(200).send(createDiet)
+    reply.status(204).send()
   })
 
   app.get('/:idUser/list', async (request, reply) => {
@@ -46,6 +46,22 @@ export async function snacksRoutes(app: FastifyInstance){
 
     return {
       listAllSnacksFromId
+    }
+  })
+
+  app.get('/:idUser/list/:idSnack', async (request, reply) => {
+    
+    const listSnacksParamsSchema = z.object({
+      idUser: z.string(),
+      idSnack: z.string(),
+    })
+
+    const { idUser, idSnack } = listSnacksParamsSchema.parse(request.params)
+
+    const snack = await knex('snacks').where({id: idSnack, idUser: idUser}).select().first()
+
+    return {
+      snack
     }
   })
 
@@ -79,5 +95,33 @@ export async function snacksRoutes(app: FastifyInstance){
     }).update({ name: name, description: description, dateAndTime: dateAndTime, diet: diet })
     
     return { snack}
+  })
+
+  app.delete('/:idUser/delete/:idSnack', async (request, reply) => {
+    const deleteResponseParamsSchema = z.object({
+      idUser: z.string(),
+      idSnack: z.string(),
+    })
+
+    const { idUser, idSnack } = deleteResponseParamsSchema.parse(request.params);
+
+    const user = await knex("users").where('id', idUser).first();
+
+    if (!user){
+      throw new Error('User not found')
+    }
+
+    const snack = await knex("snacks").where({
+      id: idSnack,
+      idUser,
+    }).del()
+  
+    if (!snack) {
+      reply.status(404).send({
+        message: 'Not impossible remove snack. Not exists.'
+      })
+    }
+
+   reply.status(200).send()
   })
 }
