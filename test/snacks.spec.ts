@@ -220,4 +220,47 @@ describe('Snacks routes', async () => {
 
   })
 
+  it("Should metrics users", async () => {
+    const { body } = await request(app.server)
+      .post('/users/create')
+      .send({
+        username: "Gabriels",
+        password: "123456789"
+      })
+
+
+    const { id: idUser } = body
+    await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com feijoada',
+        idUser: idUser,
+        description: 'Essa comida é muito típica',
+        dateAndTime: '22023-05-01T14:56:13Z',
+        diet: false
+      })
+
+      await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com s',
+        idUser: idUser,
+        description: 'Essa comida é sss muito típicas',
+        dateAndTime: '22023-05-01T14:56:13Z',
+        diet: false
+      })
+    
+   
+    const resulteSnack = await request(app.server)
+      .get(`/users/metrics/${idUser}`)
+
+    expect(resulteSnack.body).toEqual(
+      expect.objectContaining({
+        name: 'Arroz com feijoada',
+        description: 'Essa comida é muito típica',
+      })
+    )
+
+  })
+
 })

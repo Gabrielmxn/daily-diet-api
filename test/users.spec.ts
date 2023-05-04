@@ -43,7 +43,7 @@ describe('create users',async() => {
         username: "Gabriel",
         password: "123456789"
       })
-      .expect(201)
+      .expect(200)
   })
 })
 

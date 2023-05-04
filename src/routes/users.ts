@@ -67,10 +67,32 @@ export async function usersRoutes(app: FastifyInstance){
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       })
     }
-    
-    
-   
+  })
 
-    return reply.status(201).send()
+  app.get('/metrics/:id', async (request, reply) => {
+    const metricsIdParamsSchema = z.object({
+      id: z.string(),
+    })
+
+    const { id } = metricsIdParamsSchema.parse(request.params)
+
+    const  metrics = {
+      registeredMeal: (await knex('snacks').where('idUser', id)).length,
+      inDiet: (await knex('snacks').where({
+        idUser: id,
+        diet: 1
+      })).length,
+      outDiet: (await knex('snacks').where({
+        idUser: id,
+        diet: 0
+      })).length
+
+    } 
+
+
+    return {
+      metrics
+    }
+    
   })
 }
