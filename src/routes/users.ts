@@ -5,7 +5,19 @@ import { z } from "zod";
 import { randomUUID } from "crypto";
 import { env } from "../env";
 import { checkSessionIdExists } from "../middlewares/check-sessio-id-exists";
+import { Tables } from "knex/types/tables";
 
+
+interface Snacks {
+    id: string,    
+    idUser: string,
+    name: string,
+    description: string,
+    dateAndTime: Date,
+    diet: boolean,
+    created_at: Date
+    registerDayDiet: string | number;
+}
 export async function usersRoutes(app: FastifyInstance){
   app.post('/create', async (request, reply) => {
     const createUsersBodySchema = z.object({ 
@@ -75,18 +87,28 @@ export async function usersRoutes(app: FastifyInstance){
     })
 
     const { id } = metricsIdParamsSchema.parse(request.params)
+    const theSnacks = await knex('snacks').select('*').where({ diet: true, idUser: id }).groupBy('dateAndTime').count('dateAndTime', {as: 'registerDayDiet'}) as Snacks[]
+  
+    const biggerRegisterDayDiet = theSnacks.reduce(function(prev, current) {
+      return (prev.registerDayDiet > current.registerDayDiet) ? prev : current
+    })
 
+    const snackTheDay = await knex('snacks').select('*').where({ diet: true, idUser: id, dateAndTime: biggerRegisterDayDiet.dateAndTime})
+   
     const  metrics = {
       registeredMeal: (await knex('snacks').where('idUser', id)).length,
       inDiet: (await knex('snacks').where({
         idUser: id,
-        diet: 1
+        diet: true
       })).length,
       outDiet: (await knex('snacks').where({
         idUser: id,
-        diet: 0
-      })).length
-
+        diet: false
+      })).length,
+      aSnack: {
+        snackTheDay,
+        day: snackTheDay[0].dateAndTime ?? null
+      }
     } 
 
 
@@ -95,4 +117,7 @@ export async function usersRoutes(app: FastifyInstance){
     }
     
   })
+
+
+  
 }

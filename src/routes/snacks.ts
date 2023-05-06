@@ -12,7 +12,7 @@ export async function snacksRoutes(app: FastifyInstance){
       name: z.string(),
       idUser: z.string(),
       description: z.string(),
-      dateAndTime: z.string(),
+      dateAndTime: z.string().datetime(),
       diet: z.boolean()
     })
 

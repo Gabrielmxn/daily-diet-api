@@ -39,7 +39,7 @@ describe('Snacks routes', async () => {
         name: "Feijao",
         idUser: id,
         description: "Testando feijao",
-        dateAndTime: "22023-05-01T14:56:13Z",
+        dateAndTime: new Date("2023-05-05 22:56:07"),
         diet: true
       })
       .expect(204)
@@ -65,7 +65,7 @@ describe('Snacks routes', async () => {
         name: 'Feijao',
         idUser: id,
         description: 'Testando feijao',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: false
       })
 
@@ -75,7 +75,7 @@ describe('Snacks routes', async () => {
         name: 'Feijao 2',
         idUser: id,
         description: 'Testando feijao 2',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: true
       })
 
@@ -85,7 +85,7 @@ describe('Snacks routes', async () => {
         name: 'Arroz',
         idUser: randomUUID(),
         description: 'Arroz do japão',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: true
       })
 
@@ -97,12 +97,12 @@ describe('Snacks routes', async () => {
       expect.objectContaining({
         name: 'Feijao',
         description: 'Testando feijao',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
       }),
       expect.objectContaining({
         name: 'Feijao 2',
         description: 'Testando feijao 2',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
       })
     ])
 
@@ -126,7 +126,7 @@ describe('Snacks routes', async () => {
         name: 'Feijao',
         idUser: idUser,
         description: 'Testando feijao',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: false
       })
     const { body: snackBody } = await request(app.server)
@@ -137,7 +137,7 @@ describe('Snacks routes', async () => {
       .send({
         name: 'Arroz',
         description: 'Beterraba',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: true
       })
 
@@ -173,7 +173,7 @@ describe('Snacks routes', async () => {
         name: 'Feijao',
         idUser: idUser,
         description: 'Testando feijao',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: false
       })
     const { body: snackBody } = await request(app.server)
@@ -202,7 +202,7 @@ describe('Snacks routes', async () => {
         name: 'Arroz com feijoada',
         idUser: idUser,
         description: 'Essa comida é muito típica',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: false
       })
     const { body: snackBody } = await request(app.server)
@@ -236,7 +236,7 @@ describe('Snacks routes', async () => {
         name: 'Arroz com feijoada',
         idUser: idUser,
         description: 'Essa comida é muito típica',
-        dateAndTime: '22023-05-01T14:56:13Z',
+        dateAndTime: new Date('2023-05-05 22:56:07'),
         diet: false
       })
 
@@ -246,8 +246,38 @@ describe('Snacks routes', async () => {
         name: 'Arroz com s',
         idUser: idUser,
         description: 'Essa comida é sss muito típicas',
-        dateAndTime: '22023-05-01T14:56:13Z',
-        diet: false
+        dateAndTime: '2023-05-05T14:56:13Z',
+        diet: true
+      })
+
+      await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com s',
+        idUser: idUser,
+        description: 'Essa comida é sss muito típicas',
+        dateAndTime: new Date('2023-05-05T14:56:13Z'),
+        diet: true
+      })
+
+      await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com s',
+        idUser: idUser,
+        description: 'Essa comida é sss muito típicas',
+        dateAndTime: new Date('2023-04-01T14:56:13Z'),
+        diet: true
+      })
+
+      await request(app.server)
+      .post('/snacks/create')
+      .send({
+        name: 'Arroz com s',
+        idUser: idUser,
+        description: 'Essa comida é sss muito típicas',
+        dateAndTime: new Date('2023-04-01T14:56:13Z'),
+        diet: true
       })
     
    
